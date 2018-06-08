@@ -1,144 +1,345 @@
 <?php
 
-defined('BASEPATH') OR exit('No direct script access allowed');
+//require(APPPATH . 'libraries/REST_Controller.php');
 
-use TinaBlog\Libraries\Posts\PostService;
+use TinaBlog\Libraries\User\UserService;
 
 
-class UserController extends CI_Controller {
+/**
+ * Created by PhpStorm.
+ * User: oluwa
+ * Date: 5/28/2018
+ * Time: 4:14 AM
+ */
 
-    private $postService;
+ class UserController extends MY_Controller {
 
-    public function __construct() {
+    private $userService;
+
+    public function __construct()
+    {
 
         parent::__construct();
 
-        $this->postService = new PostService();
-
-        //load user model
-        // $this->load->model('user');
+        $this->userService = new UserService();
 
     }
 
-    public function index() {
+    //create
+    public function index_post() {
 
-        echo json_encode(["user" => "Tina"]);
+      $postData = $this->input->post();
 
-    }
+      if(is_null($postData) || empty($postData)) {
 
-    public function add_post() {
+          $postData = json_decode($this->security->xss_clean($this->input->raw_input_stream), true);
 
-      $this->load->helper('form');
+        }
 
       $this->load->library('form_validation');
 
-      $this->form_validation->set_rules("name", "Name", 'required');
+      $this->form_validation->set_data($postData);
 
-      $this->form_validation->set_rules("email", "Name", 'required');
+      $this->form_validation->set_rules("name", "Name", 'trim|required');
 
-      if ($this->$this->form_validation->run() === FALSE) {
+      $this->form_validation->set_rules("email", "Email", 'trim|required|valid_email');
 
-          $response["status"] = false;
+      $this->form_validation->set_rules('password', 'Password', array('required', 'trim', 'min_length[5]'));
 
-          $response["error"]["message"] = "Error" . $this->form_validation->error_string();
+       if ($this->form_validation->run()) {
 
-          $response["error"]["code"] = 400;
+           $response = $this->userService->store($postData);
 
-          return $response;
+           $statusCode = ($response["status"]) ? self::HTTP_OK : self::HTTP_BAD_REQUEST;
+
+           $this->response($response, $statusCode);
+
+       } else {
+
+           $response["status"] = false;
+
+           $response["error"]["message"] = $this->form_validation->error_string();
+
+           $response["error"]["code"] = 400;
+
+           $this->response($response, self::HTTP_BAD_REQUEST);
+
+       }
+
+    }
+
+    public function edit_put($id)
+    {
+
+      // $id = $this->uri->segment(3);
+
+    //   $editData = array('name' => $this->input->get('name'),
+    // 'email' => $this->input->get('email'));
+
+      $postData = $this->input->post();
+
+      if(is_null($postData) || empty($postData)) {
+
+          $postData = json_decode($this->security->xss_clean($this->input->raw_input_stream), true);
+
+        }
+
+      $this->load->library('form_validation');
+
+      $this->form_validation->set_data($postData);
+
+      $this->form_validation->set_rules("name", "Name", 'trim|required');
+
+      $this->form_validation->set_rules("email", "Email", 'trim|required|valid_email');
+
+      $this->form_validation->set_rules('password', 'Password', array('required', 'trim', 'min_length[5]'));
+
+       if ($this->form_validation->run()) {
+
+           $response = $this->userService->updateUser($postData);
+
+           $statusCode = ($response["status"]) ? self::HTTP_OK : self::HTTP_BAD_REQUEST;
+
+           $this->response($response, $statusCode);
+
+       } else {
+
+           $response["status"] = false;
+
+           $response["error"]["message"] = $this->form_validation->error_string();
+
+           $response["error"]["code"] = 400;
+
+           $this->response($response, self::HTTP_BAD_REQUEST);
+
+       }
+      //
+      // $response = $this->userService->updateUser($id, $editData);
+      //
+      // $this->response($response);
+
+    }
+
+    public function destroy_delete($id)
+    {
+
+      $this->userService->delete($id);
+
+    }
+
+    public function eddit_put($id)
+    {
+
+      // $editData = $this->input->post();
+      $editData = array(
+        'title' => $this->input->post('title'),
+        'body' => $this->input->post('body')
+      );
+
+      if(is_null($editData) || empty($editData)) {
+
+          $editData = json_decode($this->security->xss_clean($this->input->raw_input_stream), true);
+
+        }
+
+      $this->load->library('form_validation');
+
+      $this->form_validation->set_data($editData);
+
+      $this->form_validation->set_rules("title", "Title", 'trim|required');
+
+      $this->form_validation->set_rules("body", "Body", 'trim|required');
+
+       if ($this->form_validation->run()) {
+
+           $response = $this->postService->updatePost($editData, $id);
+
+           $statusCode = ($response["status"]) ? self::HTTP_OK : self::HTTP_BAD_REQUEST;
+
+           $this->response($response, $statusCode);
+
+       } else {
+
+           $response["status"] = false;
+
+           $response["error"]["message"] = $this->form_validation->error_string();
+
+           $response["error"]["code"] = 400;
+
+           $this->response($response, self::HTTP_BAD_REQUEST);
+
+       }
+
+    }
+
+    //read all
+    public function user_get() {
+
+        $response = $this->userService->get();
+
+        $statusCode = ($response["status"]) ? self::HTTP_OK : self::HTTP_BAD_REQUEST;
+
+        $this->response($response, $statusCode);
+
+    }
+
+    //read one
+    public function view_get($id = NULL)
+    {
+
+      $response = $this->userService->get($id);
+
+      if(empty($response)) {
+
+        $statusCode = ($response["status"]) ? self::HTTP_OK : self::HTTP_BAD_REQUEST;
+
+        $this->response($response, $statusCode);
 
       } else {
 
-        $this->User_model->store();
+        $response['status'] = FALSE;
 
-        $this->response([
+        $response['error']['message'] = 'not found';
 
-          'status' => true,
+        $response['error']['code'] = 400;
 
-          'message' => 'added'
-
-        ], REST_Controller::HTTP_OK);
-
-              return $response;
+        $this->response($response, self::HTTP_BAD_REQUEST);
 
       }
 
     }
 
-    public function show($id) {
+  //   public function login_post() {
+  //
+	// 	// create the data object
+	// 	// $data = new stdClass();
+  //   $login = $this->input->post();
+  //
+  //   if(is_null($login) || empty($login)) {
+  //
+  //   $postData = json_decode($this->security->xss_clean($this->input->raw_input_stream), true);
+  //
+  //   }
+  //
+  // // $this->load->library('form-validation');
+  // // $this->load->helper(array('form', 'url'));
+  //
+  // $this->load->library('form_validation');
+  //
+  // $this->form_validation->set_rules("email", "Email", 'trim|required|valid_email');
+  //
+  // $this->form_validation->set_rules('password', 'Password', array('required', 'trim'));
+  //
+  // if ($this->form_validation->run()) {
+  //
+  //   // $username = $this->input->post('username');
+  //
+  //   //get and ecrypt password
+  //   // $password = password_hash($this->input->post('password', PASSWORD_BCRYPT));
+  //
+  //   //log in users
+  //   $user_id = $this->userService->loginUser($username, $password);
+  //
+  //   //check for the // ID
+  //   if($user_id){
+  //
+  //     //
+  //     $statusCode = ($response["status"]) ? self::HTTP_OK : self::HTTP_BAD_REQUEST;
+  //
+  //     $this->response($response, $statusCode);
+  //
+  //   } else {
+  //
+  //     return "incorrect creds";
+  //
+  //   }
+    // $response = $this->userService->loginUser($username, $password);
 
-      $user = $this->User_model->show($id);
+      // $user_id = $this->user_model->get_id_from_username($username);
+      //
+      // $user    = $this->user_model->get_user($user_id);
 
-        //check if the user data exists
-        if(empty($users)){
 
-            //set the response and exit
-            $this->response([
 
-              'status' => FALSE,
 
-              'message' => 'user not found'
+  //  } else {
+  //
+  //   $response["status"] = false;
+  //
+  //   $response["error"]["message"] = $this->form_validation->error_string();
+  //
+  //   $response["error"]["code"] = 400;
+  //
+  //   $this->response($response, self::HTTP_BAD_REQUEST);
+  //
+  //
+  // }
 
-            ], REST_Controller::HTTP_NOT_FOUND);
+  public function userlogin_post()
+  {
 
-        } else {
-            //set reposne
-            $this->response([
+    $login = $this->input->post();
 
-                'status' => FALSE,
+if(is_null($login) || empty($login))
+{
 
-                'message' => 'SUCCESS'
+  $login = json_decode($this->security->xss_clean($this->input->raw_input_stream), true);
 
-            ], REST_Controller::HTTP_OK);
+  }
 
-        }
+$this->load->library('form_validation');
 
-    }
+$this->form_validation->set_data($login);
 
-    public function destroy($id){
-        //check whether post id is not empty
-        if($id){
-            //delete post
-            $user = $this->User_model->delete_user($id);
+$this->form_validation->set_rules("email", "Email", 'trim|required|valid_email');
+//
+$this->form_validation->set_rules('password', 'Password', array('required', 'trim'));
 
-            if($user){
-                //set the response and exit
-                $this->response([
+if ($this->form_validation->run()) {
 
-                    'status' => TRUE,
+    $response = $this->userService->loginUser($login);
 
-                    'message' => 'UserController deleted'
+    $statusCode = ($response["status"]) ? self::HTTP_OK : self::HTTP_BAD_REQUEST;
 
-                ], REST_Controller::HTTP_OK);
+    $this->response($response, $statusCode);
 
-            } else {
-                //set the response and exit
-                $this->response("unable to delete", REST_Controller::HTTP_BAD_REQUEST);
+} else {
 
-            }
+    $response["status"] = false;
 
-        } else {
+    $response["error"]["message"] = $this->form_validation->error_string();
 
-            //set the response and exit
-            $this->response([
+    $response["error"]["code"] = 400;
 
-                'status' => FALSE,
-
-                'message' => 'user not found.'
-
-            ], REST_Controller::HTTP_NOT_FOUND);
-
-        }
-
-    }
-
-    public function edit() {
-
-      // $this->User_model->update_user($this->put('id'), $user);
-      return $this->User_model->update_user();
-
-    }
-
+    $this->response($response, self::HTTP_BAD_REQUEST);
 
 }
 
-?>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}

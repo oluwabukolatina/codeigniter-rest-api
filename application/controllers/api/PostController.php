@@ -240,14 +240,16 @@ use TinaBlog\Libraries\Post\PostService;
 
     }
 
-    public function destroy_delete($id)
+    public function destroy_post($id)
     {
 
      // $response = $this->postService->delete($id);
 
      // $this->response($response);
 
-     $this->postService->delete($id);
+     $response = $this->postService->delete($id);
+
+     $this->response($response);
 
     }
 

@@ -24,6 +24,8 @@
 	"autoload" : {
 		"psr-4" : {
 			"TinaBlog\\Libraries\\Post\\": "application/libraries/posts",
+			"TinaBlog\\Libraries\\User\\": "application/libraries/users",
+			"TinaBlog\\Libraries\\Auth\\": "application/libraries/auth",
 			"TinaBlog\\Libraries\\": "application/libraries"
 		}
 	}

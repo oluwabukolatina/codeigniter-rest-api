@@ -16,9 +16,7 @@ class PostService {
 
   public function store(array $data) : array {
 
-    $CI = &get_instance();
-
-    $result = $CI->db->insert("posts", [
+    $result = $this->CI->db->insert("posts", [
 
             'title' => $data['title'],
 
@@ -50,76 +48,66 @@ class PostService {
 
   }
 
-  public function updatePost(array $data, $id) : array {
+  public function updatePost($id, $data)
+  {
 
-    $CI = &get_instance();
+      $updateData = [];
 
-    $post_id = $CI->db->where('id', $id);
+      $updateData['title'] = $data['title'];
 
-    $result = $CI->db->set("posts", [
+      $updateData["body"] = $data['body'];
 
-      'id' => $post_id,
+      $updateString = $this->CI->db->update_string("posts", $updateData, ["id" => $id]);
 
-      'title' => $data['title'],
+      $result = $this->CI->db->query($updateString);
 
-      'body' => $data['body']
+      if ($result) {
 
-    ]);
+          $response['status'] = true;
 
-    // $result = $CI->db->update("posts", [
-    //
-    //   'title' => $data['title'],
-    //
-    //   'body' => $data['body']
-    //
-    // ])->where('id', $id);
+          $response['message'] = 'post has been updated';
+
+          $response['code'] = 201;
+
+          return $response;
+
+      }
+
+      $response['status'] = false;
+
+      $response['message'] = "operation not successfull";
+
+      $response['code'] = 500;
+
+      return $response;
 
   }
 
   public function get($id = null)
-  // public function get($id = FALSE)
   {
-
-    $CI = &get_instance();
 
     log_message("debug", "CI IS NULL === " . json_encode(is_null($CI)));
 
     log_message("debug", "CI input IS NULL === " . json_encode(is_null($CI->input)));
 
-    // if(! empty($id))
+//     if(! empty($id))
 
     if(!is_null($id))
         $this->CI->db->where("id", $id);
 
-        $result = $CI->db->select("*")
+    $result = $this->CI->db->select("*")
 
-                                ->from('posts')
+                        ->from('posts')
 
-                                ->get()->result_array();
-
-
-
-
-    if(empty($result))
-    {
-
-      $response["status"] = false;
-
-      $response["error"]["message"] = "Posts not found";
-
-      $response["error"]["code"] = 404;
-
-      return $response;
-
-    }
+                        ->get()->result_array();
 
       $response["status"] = true;
 
       $response["posts"] = $result;
 
-      $response["message"] = "found";
+      $response["message"] = "Operation Successful";
 
-      $response["error"] = 201;
+      $response["code"] = 200;
 
       return $response;
 
@@ -127,103 +115,34 @@ class PostService {
 
   public function delete($id)
   {
+    $result = $this->CI->db->delete('posts', array('id' => $id));
 
-    $CI = &get_instance();
+      log_message("debug", "CI IS NULL === " . json_encode($result));
 
-    $this->CI->db->delete('posts', array('id' => $id));
+      //  $result = $this->CI->db->query("delete from `posts` where id = $id");
 
-  }
+    if($result) {
 
-  // public function updates($data, $id) : array {
-  public function updates(array $data, $id) : array {
-  // public function updates($id, $data)
-  //
-  // {
+        $response["status"] = true;
 
-    $CI = &get_instance();
+        $response["message"] = "deleted";
 
-    $this->CI->db->where('id', $id);
-
-    $result = $CI->db->update("posts", [
-
-      'title' => $data['title'],
-
-      'body' => $data['body']
-
-    // ])->where('id', $id);
-    ]);
-
-    // $result = $CI->db->where('id', $id)->update("posts", [
-    //
-    //   'title' => $data['title'],
-    //
-    //   'body' => $data['body']
-    //
-    // ]);
-
-    if(!$result) {
-
-        $response["status"] = false;
-
-        $response["error"]["message"] = "unable";
-
-        $response["error"]["code"] = 500;
-
+        $response["code"] = 200;
+        
         return $response;
 
     }
 
-    $response["status"] = true;
 
-    $response["post"] = $result;
+      $response["status"] = false;
 
-    $response["message"] = "edited";
+      $response["message"] = "Sorry we're unable to delete post now. Please try again or contact support";
 
-    $response["code"] = 201;
+      $response["code"] = 500;
 
     return $response;
 
   }
-
-    //
-    //
-    // return $this->ci->db->set('posts', $result);
-
-    // $data = array(
-    //
-    //   'title' => $_POST['title'],
-    //
-    //   'body' => $_POST['body']
-    //
-    // );
-    //
-    // $this->db->where('id', $id);
-    //
-    // $this->db->set('posts', $data);
-
-    // $updateData = [];
-
-    // $result = $CI->db->update('posts', [
-    //
-    //   $updateData['title'] = $_POST['title']
-    // ]);
-
-    // if(array_key_exists("title", $data)) {
-    //
-    // $updateData["title"] = $data["title"]
-    //
-    // }
-    // if(array_key_exists('title', $data[
-    //   $updateData['title'] = $data['title']
-    // ]));
-    //
-    // if(array_key_exists('title', $data[
-    //   $updateData['body'] = $data['body']
-    // ]));
-    //
-    // $result = $CI->db->set('posts', $updateData);
-
-
 
 
 
