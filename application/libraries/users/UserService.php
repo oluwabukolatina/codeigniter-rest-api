@@ -14,27 +14,20 @@ class UserService {
 
   }
   public function get($id = null)
-  // public function get($id = FALSE)
-  {
+   {
 
-//    $CI = &get_instance();
-
-    log_message("debug", "CI IS NULL === " . json_encode(is_null($CI)));
-
-    log_message("debug", "CI input IS NULL === " . json_encode(is_null($CI->input)));
-
-    // if(! empty($id))
+//    log_message("debug", "CI IS NULL === " . json_encode(is_null($CI)));
+//
+//    log_message("debug", "CI input IS NULL === " . json_encode(is_null($CI->input)));
 
     if(!is_null($id))
         $this->CI->db->where("id", $id);
 
-        $result = $CI->db->select("*")
+        $result = $this->CI->db->select("*")
 
                                 ->from('users')
 
                                 ->get()->result_array();
-
-
 
     if(empty($result))
     {
@@ -51,9 +44,9 @@ class UserService {
 
       $response["status"] = true;
 
-      $response["posts"] = $result;
+//      $response["users"] = $result;
 
-      $response["message"] = "found";
+      $response["message"] = "operation successful";
 
       $response["error"] = 201;
 
@@ -64,27 +57,25 @@ class UserService {
   public function delete($id)
   {
 
-    $result = $this->CI->db->query("delete from `users` where id = $id");
+    $result = $this->CI->db->delete("posts", array('id', $id));
 
     if($result) {
 
-      $response["status"] = false;
+      $response["status"] = true;
 
-      $response["error"]["message"] = "Posts not found";
+      $response["message"] = "user has been deleted";
 
-      $response["error"]["code"] = 404;
+      $response["code"] = 200;
 
       return $response;
 
     }
 
-    $response["status"] = true;
+    $response["status"] = false;
 
-    $response["posts"] = $result;
+    $response["message"] = "sorry, we are not able to carrry out this device right now ";
 
-    $response["message"] = "found";
-
-    $response["error"] = 201;
+    $response["error"] = 500;
 
     return $response;
 

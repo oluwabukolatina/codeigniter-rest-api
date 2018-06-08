@@ -86,9 +86,9 @@ class PostService {
   public function get($id = null)
   {
 
-    log_message("debug", "CI IS NULL === " . json_encode(is_null($CI)));
-
-    log_message("debug", "CI input IS NULL === " . json_encode(is_null($CI->input)));
+//    log_message("debug", "CI IS NULL === " . json_encode(is_null($CI)));
+//
+//    log_message("debug", "CI input IS NULL === " . json_encode(is_null($CI->input)));
 
 //     if(! empty($id))
 
@@ -128,11 +128,10 @@ class PostService {
         $response["message"] = "deleted";
 
         $response["code"] = 200;
-        
+
         return $response;
 
     }
-
 
       $response["status"] = false;
 
