@@ -27,7 +27,8 @@ class AuthService {
 
         ]);
 
-        if(!$result) {
+        if(!$result)
+        {
 
             $response["status"] = false;
 
@@ -41,7 +42,7 @@ class AuthService {
 
         $response["status"] = true;
 
-        $response["post"] = $result;
+//        $response["post"] = $result;
 
         $response["message"] = "user created successfully";
 
@@ -54,16 +55,13 @@ class AuthService {
     public function loginUser(array $data) : array{
 
         //validate
-        $CI = &get_instance();
-
-        //validate
         // $this->db->where('username', $username);
         $this->CI->db->where('email', $data['email']);
 
         $this->CI->db->where('password', $data['password']);
         // $this->db->where('password', $password)
 
-        $result = $CI->db->get('users');
+        $result = $this->CI->db->get('users');
 
         if($result->num_rows() == 1)
         {
