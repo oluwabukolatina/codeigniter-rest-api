@@ -12,8 +12,6 @@ use TinaBlog\Libraries\Post\PostService;
  * Time: 4:14 AM
  */
 
-//class PostController extends CI_Controller {
-
  class PostController extends MY_Controller {
 
     private $postService;
@@ -118,47 +116,6 @@ use TinaBlog\Libraries\Post\PostService;
            $this->response($response, self::HTTP_BAD_REQUEST);
 
        }
-
-    }
-
-    public function edit_puut($id) {
-
-
-      $this->load->library('form_validation');
-
-      $postData = $this->input->post();
-
-      if(is_null($postData) || empty($postData)) {
-
-        $postData = json_decode($this->security->xss_clean($this->input->raw_input_stream), true);
-
-      }
-
-      $this->form_validation->set_data($postData);
-
-          $this->form_validation->set_rules("title", "Title", 'trim|required');
-
-          $this->form_validation->set_rules("body", "Body", 'trim|required');
-
-           if ($this->form_validation->run()) {
-
-               $response = $this->postService->updates($postData);
-
-               $statusCode = ($response["status"]) ? self::HTTP_OK : self::HTTP_BAD_REQUEST;
-
-               $this->response($response, $statusCode);
-
-           } else {
-
-               $response["status"] = false;
-
-               $response["error"]["message"] = $this->form_validation->error_string();
-
-               $response["error"]["code"] = 400;
-
-               $this->response($response, self::HTTP_BAD_REQUEST);
-
-           }
 
     }
 
