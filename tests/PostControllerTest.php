@@ -63,40 +63,53 @@ class PostControllerTest extends PHPUnit_Framework_TestCase
 
     public function testPosts()
     {
+
         $response = $this->guzzle->get(self::$baseUrl . "posts");
+
+        $this->assertEquals($response->getStatusCode(), 200);
+
+        $response = json_decode($response->getBody(), true);
+
+        $this->assertTrue($response["status"]);
+
+        $this->assertNotEmpty($response['message']);
+
+        if(!empty($response["posts"])) {
+
+            $this->getOnePost($response["posts"][0]["id"]);
+
+            $this->deleteOnePost($response["posts"][0]["id"]);
+
+        }
+
+    }
+
+    public function deleteOnePost($postId)
+    {
+        $response = $this->guzzle->post(self::$baseUrl . "post/delete/" . $postId);
         $this->assertEquals($response->getStatusCode(), 200);
         $response = json_decode($response->getBody(), true);
         $this->assertTrue($response["status"]);
-        $this->assertNotEmpty($response['message']);
-        if(!empty($response["posts"])) {
-            $this->getOnePost($response["posts"][0]["id"]);
-        }
-    }
-
-    public function Delete()
-    {
-        $postId = uniqid();
-        $response = $this->guzzle->delete(self::$baseUrl . "post/delete". $postId);
-        $this->assertEquals($response->getStatusCode(), 200);
-        $response = json_encode($response->getBody(), true);
-        $this->assertTrue($response['status']);
-
     }
 
     public function getOnePost($postId)
     {
-
         $response = $this->guzzle->get(self::$baseUrl . "post/" . $postId);
-
         $this->assertEquals($response->getStatusCode(), 200);
-
         $response = json_decode($response->getBody(), true);
-
         $this->assertTrue($response["status"]);
-
         $this->assertNotEmpty($response['message']);
 
     }
+
+//    public function deleteOnePost($postId)
+//    {
+//        $response = $this->guzzle->delete(self::$baseUrl . "post/delete". $postId);
+//        $this->assertEquals($response->getStatusCode(), 200);
+//        $response = json_encode($response->getBody(), true);
+//        $this->assertTrue($response['status']);
+//
+//    }
 
 
 
