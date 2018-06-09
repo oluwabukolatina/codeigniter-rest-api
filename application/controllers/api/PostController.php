@@ -35,70 +35,80 @@ use TinaBlog\Libraries\Post\PostService;
 
     //create
     public function index_post() {
-
           $postData = $this->input->post();
-
           if(is_null($postData) || empty($postData)) {
-
               $postData = json_decode($this->security->xss_clean($this->input->raw_input_stream), true);
-
             }
-
           $postData = !is_null($postData) ? $postData : [];
-
           $this->load->library('form_validation');
-
           $this->form_validation->set_data($postData);
-
           $this->form_validation->set_rules("title", "Title", 'trim|required');
-
           $this->form_validation->set_rules("body", "Body", 'trim|required');
-
            if ($this->form_validation->run()) {
-
                $response = $this->postService->store($postData);
-
                $statusCode = ($response["status"]) ? self::HTTP_OK : self::HTTP_BAD_REQUEST;
-
                $this->response($response, $statusCode);
-
            } else {
-
                $response["status"] = false;
-
                $response["error"]["message"] = $this->form_validation->error_string();
-
                $response["error"]["code"] = 400;
-
                $this->response($response, self::HTTP_BAD_REQUEST);
-
            }
-
     }
 
-    public function edit_put($id)
+    public function edit_post($id)
     {
 
-      // $editData = $this->input->post();
+        $editData = $this->input->post();
+
+        if(is_null($editData) || empty($editData)) {
+            $editData = json_decode($this->security->xss_clean($this->input->raw_input_stream), true);
+        }
+
+        $editData = !is_null($editData) ? $editData : [];
+
+        log_message("debug", "update controller called " . json_encode($editData));
+
+        $this->load->library('form_validation');
+
+        $this->form_validation->set_data($editData);
+        $this->form_validation->set_rules("title", "Post Title", "trim");
+        $this->form_validation->set_rules("body", "Post Body", "trim");
+
+        if ($this->form_validation->run()) {
+
+            $response = $this->postService->updatePost($id, $editData);
+
+            $statusCode = ($response["status"]) ? self::HTTP_OK : self::HTTP_BAD_REQUEST;
+
+            $this->response($response, $statusCode);
+
+        } else {
+
+            $response["status"] = false;
+
+            $response["error"]["message"] = $this->form_validation->error_string();
+
+            $response["error"]["code"] = 400;
+
+            $this->response($response, self::HTTP_BAD_REQUEST);
+
+        }
+    }
+
+    public function edit_real($id)
+    {
       $editData = array(
         'title' => $this->input->post('title'),
         'body' => $this->input->post('body')
       );
-
       if(is_null($editData) || empty($editData)) {
-
           $editData = json_decode($this->security->xss_clean($this->input->raw_input_stream), true);
-
         }
-
       $this->load->library('form_validation');
-
       $this->form_validation->set_data($editData);
-
       $this->form_validation->set_rules("title", "Title", 'trim|required');
-
       $this->form_validation->set_rules("body", "Body", 'trim|required');
-
        if ($this->form_validation->run()) {
 
            $response = $this->postService->updatePost($editData, $id);

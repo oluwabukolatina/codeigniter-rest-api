@@ -3,7 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 $route['post/add']['post'] = "api/postController/create";
 $route['login-user']['post'] = "api/userController/userlogin";
-$route['post/update/(:any)'] = 'api/postController/edit/$1';
+$route['post/update/(:any)']['post'] = 'api/postController/edit/$1';
 $route['user/update/(:any)']['put'] = 'api/userController/edit/$1';
 $route['post/(:any)']['get'] = 'api/postController/view/$1';
 $route['user/(:any)']['get'] = 'api/userController/view/$1';

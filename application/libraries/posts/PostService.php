@@ -48,16 +48,29 @@ class PostService {
 
   }
 
-  public function updatePost($id, $data)
+  public function updatePost($id, array $data)
   {
+
+      log_message("debug", "Update called " . json_encode($data));
 
       $updateData = [];
 
-      $updateData['title'] = $data['title'];
+     if(array_key_exists("title", $data))
+          $updateData['title'] = $data['title'];
 
-      $updateData["body"] = $data['body'];
+     if(array_key_exists("body", $data))
+          $updateData["body"] = $data['body'];
+
+     if(empty($updateData)) {
+         $response["status"] = true;
+         $response["message"] = "Nothing was updated";
+         $response["code"] = 200;
+         return $response;
+     }
 
       $updateString = $this->CI->db->update_string("posts", $updateData, ["id" => $id]);
+
+     log_message("debug", "Update SQL : " . $updateString);
 
       $result = $this->CI->db->query($updateString);
 
@@ -75,7 +88,7 @@ class PostService {
 
       $response['status'] = false;
 
-      $response['message'] = "operation not successfull";
+      $response['message'] = "operation not successful";
 
       $response['code'] = 500;
 
