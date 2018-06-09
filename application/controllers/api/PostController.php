@@ -44,6 +44,8 @@ use TinaBlog\Libraries\Post\PostService;
 
             }
 
+          $postData = !is_null($postData) ? $postData : [];
+
           $this->load->library('form_validation');
 
           $this->form_validation->set_data($postData);
@@ -131,28 +133,12 @@ use TinaBlog\Libraries\Post\PostService;
     }
 
     //read one
-    public function view_get($id = NULL)
+    public function view_get($id)
     {
 
-      $response = $this->postService->get($id);
-
-      if(empty($response)) {
-
+        $response = $this->postService->get($id);
         $statusCode = ($response["status"]) ? self::HTTP_OK : self::HTTP_BAD_REQUEST;
-
         $this->response($response, $statusCode);
-
-      } else {
-
-        $response['status'] = FALSE;
-
-        $response['error']['message'] = 'not found';
-
-        $response['error']['code'] = 400;
-
-        $this->response($response, self::HTTP_BAD_REQUEST);
-
-      }
 
     }
 

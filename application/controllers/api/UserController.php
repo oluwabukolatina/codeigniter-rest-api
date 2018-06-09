@@ -36,6 +36,8 @@ use TinaBlog\Libraries\User\UserService;
 
         }
 
+        $postData = !is_null($postData) ? $postData : [];
+
       $this->load->library('form_validation');
 
       $this->form_validation->set_data($postData);

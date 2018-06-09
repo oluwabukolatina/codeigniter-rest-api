@@ -19,6 +19,8 @@ class PostControllerTest extends PHPUnit_Framework_TestCase
 
     private static $baseUrl;
 
+    private $guzzle;
+
     public function __construct($name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
@@ -37,10 +39,17 @@ class PostControllerTest extends PHPUnit_Framework_TestCase
 
     }
 
-    public function testPosts()
+    public function testCreatePost()
     {
 
-        $response = $this->guzzle->get(self::$baseUrl . "posts");
+        $data = array (
+
+            "title" => 'this is a title',
+
+            "body" => "this is a body"
+        );
+
+        $response = $this->guzzle->post(self::$baseUrl . "post/add", ['body' => json_encode($data)]);
 
         $this->assertEquals($response->getStatusCode(), 200);
 
@@ -51,4 +60,51 @@ class PostControllerTest extends PHPUnit_Framework_TestCase
         $this->assertNotEmpty($response['message']);
 
     }
+
+    public function testPosts()
+    {
+        $response = $this->guzzle->get(self::$baseUrl . "posts");
+        $this->assertEquals($response->getStatusCode(), 200);
+        $response = json_decode($response->getBody(), true);
+        $this->assertTrue($response["status"]);
+        $this->assertNotEmpty($response['message']);
+        if(!empty($response["posts"])) {
+            $this->getOnePost($response["posts"][0]["id"]);
+        }
+    }
+
+    public function Delete()
+    {
+        $postId = uniqid();
+        $response = $this->guzzle->delete(self::$baseUrl . "post/delete". $postId);
+        $this->assertEquals($response->getStatusCode(), 200);
+        $response = json_encode($response->getBody(), true);
+        $this->assertTrue($response['status']);
+
+    }
+
+    public function getOnePost($postId)
+    {
+
+        $response = $this->guzzle->get(self::$baseUrl . "post/" . $postId);
+
+        $this->assertEquals($response->getStatusCode(), 200);
+
+        $response = json_decode($response->getBody(), true);
+
+        $this->assertTrue($response["status"]);
+
+        $this->assertNotEmpty($response['message']);
+
+    }
+
+
+
+
+
+
+
+
+
+
 }
