@@ -12,7 +12,8 @@
 	},
 	"require": {
 		"php": ">=5.3.7",
-		"chriskacerguis/codeigniter-restserver": "^3.0"
+		"chriskacerguis/codeigniter-restserver": "^3.0",
+        "guzzlehttp/guzzle": "~6.0"
 	},
 	"suggest": {
 		"paragonie/random_compat": "Provides better randomness in PHP 5.x"
@@ -26,7 +27,8 @@
 			"TinaBlog\\Libraries\\Post\\": "application/libraries/posts",
 			"TinaBlog\\Libraries\\User\\": "application/libraries/users",
 			"TinaBlog\\Libraries\\Auth\\": "application/libraries/auth",
-			"TinaBlog\\Libraries\\": "application/libraries"
+			"TinaBlog\\Libraries\\": "application/libraries",
+            "TinaBlog\\Tests\\": "tests"
 		}
 	}
 }
