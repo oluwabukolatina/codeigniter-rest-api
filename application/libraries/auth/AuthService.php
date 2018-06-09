@@ -69,7 +69,7 @@ class AuthService {
 
             $response['message'] = "username/password not found";
 
-            $response['status'] = "false";
+            $response['status'] = false;
 
         }
 
@@ -82,7 +82,7 @@ class AuthService {
 
             $response['message'] = 'logged in';
 
-            $response['status'] = 'true';
+            $response['status'] = true;
 
             return $response;
 

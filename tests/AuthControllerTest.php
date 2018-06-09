@@ -57,23 +57,20 @@ class AuthControllerTest extends PHPUnit_Framework_TestCase
 
     }
 
-//    public function testLogin()
-//    {
-//        $data = [
-//
-//            'email' => 'tina@g.com',
-//
-//            'password' => 'iiwiwi'
-//
-//        ];
-//
-//        $response = $this->guzzle->post(self::$baseUrl . "login", ['body' => json_encode($data)]);
-//
-//        $this->assertEquals($response->getStatusCode(), 200);
-//
-//        $response = json_decode($response->getBody(), true);
-//
-//    }
+    public function testLogin()
+    {
+        $data = [
+            'email' => 'naomi@naomi.com',
+            'password' => '11111111'
+        ];
+        //is what is being returned from the postman
+        $response = $this->guzzle->post(self::$baseUrl . "login", ['body' => json_encode($data)]);
+        $this->assertEquals($response->getStatusCode(), 200);
+        $response = json_decode($response->getBody(), true);
+//        print_r($response);
+        $this->assertTrue($response["status"]);
+        $this->assertNotEmpty($response['message']);
+    }
 
 
 

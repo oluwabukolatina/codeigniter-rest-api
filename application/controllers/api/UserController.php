@@ -175,7 +175,7 @@ use TinaBlog\Libraries\User\UserService;
     }
 
     //read all
-    public function user_get() {
+    public function all_get() {
 
         $response = $this->userService->get();
 
