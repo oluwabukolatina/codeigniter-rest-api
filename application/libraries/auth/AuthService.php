@@ -71,6 +71,8 @@ class AuthService {
 
             $response['status'] = false;
 
+            return $response;
+
         }
 
         $result = password_verify($data['password'], $user[0]->password);

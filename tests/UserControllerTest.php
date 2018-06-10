@@ -22,7 +22,7 @@ class UserControllerTest extends \PHPUnit_Framework_TestCase
         ]);
         self::$baseUrl = "localhost/talentbaseapi/index.php/";
     }
-    public function testUsers()
+    public function Users()
     {
         $response = $this->guzzle->get( self::$baseUrl . "users");
 
@@ -43,7 +43,7 @@ class UserControllerTest extends \PHPUnit_Framework_TestCase
     }
 
 
-    public function testGetOneUser($id)
+    public function GetOneUser($id)
     {
 
     }

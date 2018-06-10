@@ -17,21 +17,21 @@ class AuthControllerTest extends PHPUnit_Framework_TestCase
 
     private static $baseUrl;
 
-    private $guzzle;
+    private static $guzzle;
 
-    private $email;
+    private static $email;
 
-    private $password;
+    private static $password;
 
-    private $name;
+    private static $name;
 
-    public function __construct($name = null, array $data = [], $dataName = '')
+    public static function setUpBeforeClass()
     {
-        parent::__construct($name, $data, $dataName);
+        parent::setUpBeforeClass();
 
         $randomSuffix = strtoupper(bin2hex(random_bytes(6)));
 
-        $this->guzzle = new Client([
+        self::$guzzle = new Client([
 
             "headers" => [
 
@@ -42,29 +42,32 @@ class AuthControllerTest extends PHPUnit_Framework_TestCase
 
         self::$baseUrl = "localhost/talentbaseapi/index.php/";
 
-        $this->name = "Tina" . $randomSuffix;
+        self::$name = "naomi" . $randomSuffix;
 
-        $this->email = 'naomi' . $randomSuffix;
+        self::$email = 'naomi@g.com' . $randomSuffix;
 
-        $this->password = '11111111' . $randomSuffix;
+        self::$password = '11111111' . $randomSuffix;
+
+        echo "\nSetup Before class called;\n";
 
     }
+
 
     public function testRegister()
     {
         $data = array(
 
-            'name' => $this->name,
+            'name' => self::$name,
 
-            'email' => $this->email,
+            'email' => self::$email,
 
-            'password' => $this->password
+            'password' => self::$password
 
         );
 
-//        var_dump($data);
+        print_r($data);
 
-        $response = $this->guzzle->post(self::$baseUrl . "register", ['body' => json_encode($data)]);
+        $response = self::$guzzle->post(self::$baseUrl . "register", ['body' => json_encode($data)]);
 
         $this->assertEquals($response->getStatusCode(), 200);
 
@@ -74,21 +77,21 @@ class AuthControllerTest extends PHPUnit_Framework_TestCase
 
         $this->assertNotEmpty($response['message']);
 
-
     }
 
     public function testLogin()
     {
         $data = [
 
-            'email' => 'naomi@naomi.com',
+            'email' => self::$email,
 
-            'password' => '11111111'
-        ]
-        ;
+            'password' => self::$password
 
+        ];
+
+        print_r($data);
         //is what is being returned from the postman
-        $response = $this->guzzle->post(self::$baseUrl . "login", ['body' => json_encode($data)]);
+        $response = self::$guzzle->post(self::$baseUrl . "login", ['body' => json_encode($data)]);
 
         $this->assertEquals($response->getStatusCode(), 200);
 

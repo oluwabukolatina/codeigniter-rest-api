@@ -12,20 +12,18 @@ use GuzzleHttp\Client;
 
 use PHPUnit_Framework_TestCase;
 
-//use PhpUnit\Framework\TestCase;
-
 class PostControllerTest extends PHPUnit_Framework_TestCase
 {
 
     private static $baseUrl;
 
-    private $guzzle;
+    private static $guzzle;
 
-    public function __construct($name = null, array $data = [], $dataName = '')
+    public static function setUpBeforeClass()
     {
-        parent::__construct($name, $data, $dataName);
+        parent::setUpBeforeClass();
 
-        $this->guzzle = new Client([
+        self::$guzzle = new Client([
 
             "header" => [
 
@@ -36,6 +34,8 @@ class PostControllerTest extends PHPUnit_Framework_TestCase
         ]);
 
         self::$baseUrl = "localhost/talentbaseapi/index.php/";
+
+        echo "\nSetup Before class called;\n";
 
     }
 
@@ -51,7 +51,7 @@ class PostControllerTest extends PHPUnit_Framework_TestCase
 
         );
 
-        $response = $this->guzzle->post(self::$baseUrl . "post/add", ['body' => json_encode($data)]);
+        $response = self::$guzzle->post(self::$baseUrl . "post/add", ['body' => json_encode($data)]);
 
         $this->assertEquals($response->getStatusCode(), 200);
 
@@ -74,7 +74,7 @@ class PostControllerTest extends PHPUnit_Framework_TestCase
 
         );
 
-        $response = $this->guzzle->post(self::$baseUrl . "post/update/" . $postId, ['body' => json_encode($data)]);
+        $response = self::$guzzle->post(self::$baseUrl . "post/update/" . $postId, ['body' => json_encode($data)]);
 
         $this->assertEquals($response->getStatusCode(), 200);
 
@@ -86,7 +86,7 @@ class PostControllerTest extends PHPUnit_Framework_TestCase
 
     public function testPosts()
     {
-        $response = $this->guzzle->get(self::$baseUrl . "posts");
+        $response = self::$guzzle->get(self::$baseUrl . "posts");
 
         $this->assertEquals($response->getStatusCode(), 200);
 
@@ -110,7 +110,7 @@ class PostControllerTest extends PHPUnit_Framework_TestCase
 
     public function deleteOnePost($postId)
     {
-        $response = $this->guzzle->post(self::$baseUrl . "post/delete/" . $postId);
+        $response = self::$guzzle->post(self::$baseUrl . "post/delete/" . $postId);
 
         $this->assertEquals($response->getStatusCode(), 200);
 
@@ -122,7 +122,7 @@ class PostControllerTest extends PHPUnit_Framework_TestCase
 
     public function getOnePost($postId)
     {
-        $response = $this->guzzle->get(self::$baseUrl . "post/" . $postId);
+        $response = self::$guzzle->get(self::$baseUrl . "post/" . $postId);
 
         $this->assertEquals($response->getStatusCode(), 200);
 
@@ -133,7 +133,7 @@ class PostControllerTest extends PHPUnit_Framework_TestCase
         $this->assertNotEmpty($response['message']);
 
     }
-    
+
 
 
 
