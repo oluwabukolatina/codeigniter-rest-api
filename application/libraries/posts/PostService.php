@@ -14,47 +14,29 @@ class PostService {
 
   }
 
-  public function store(array $data) : array {
-
+  public function store(array $data, $postImage) : array {
     $result = $this->CI->db->insert("posts", [
-
             'title' => $data['title'],
-
-             'body' => $data['body']
-
+             'body' => $data['body'],
+            'imagePath' => $postImage
     ]);
-
     if(!$result) {
-
         $response["status"] = false;
-
         $response["error"]["message"] = "Sorry we're unable to add new post now. Please try again or contact support";
-
         $response["error"]["code"] = 500;
-
         return $response;
-
     }
-
     $response["status"] = true;
-
     $response["post"] = $result;
-
     $response["message"] = "Post created successfully";
-
     $response["code"] = 201;
-
     return $response;
-
   }
 
   public function updatePost($id, array $data)
   {
-
       log_message("debug", "Update called " . json_encode($data));
-
       $updateData = [];
-
      if(array_key_exists("title", $data))
           $updateData['title'] = $data['title'];
 

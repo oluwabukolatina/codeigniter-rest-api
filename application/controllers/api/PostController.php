@@ -39,30 +39,50 @@ use TinaBlog\Libraries\Post\PostService;
           if(is_null($postData) || empty($postData)) {
               $postData = json_decode($this->security->xss_clean($this->input->raw_input_stream), true);
             }
+        //log_message('debug', "Raw file data: ". json_encode($_FILES));
           $postData = !is_null($postData) ? $postData : [];
           $this->load->library('form_validation');
           $this->form_validation->set_data($postData);
           $this->form_validation->set_rules("title", "Title", 'trim|required');
           $this->form_validation->set_rules("body", "Body", 'trim|required');
-           if ($this->form_validation->run()) {
-               $response = $this->postService->store($postData);
-               $statusCode = ($response["status"]) ? self::HTTP_OK : self::HTTP_BAD_REQUEST;
-               $this->response($response, $statusCode);
-           } else {
+           if ($this->form_validation->run() === FALSE) {
                $response["status"] = false;
                $response["error"]["message"] = $this->form_validation->error_string();
                $response["error"]["code"] = 400;
                $this->response($response, self::HTTP_BAD_REQUEST);
+           } else {
+               //UPLOAD IMAGE
+               $config['upload_path'] = './assets/images/posts';
+               $config['allowed_types'] = 'gif|jpg|png';
+               $config['max_size'] = '2048';
+               $config['max_width'] = '2000';
+               $config['max_height'] = '2000';
+               $this->load->library('upload', $config);
+               $upload = $this->upload->do_upload('imagePath');
+//               log_message('debug', "Image upload result: ".json_encode($upload));
+               if($upload)
+               {
+                   $data = array('upload_path' => $this->upload->data());
+                   $postImage = $_FILES['imagePath']['name'];
+
+               } else {
+                   $error = array('error' => $this->upload->display_errors());
+                   $postImage = 'noimage.jpg';
+               }
+               $response = $this->postService->store($postData, $postImage);
+               $statusCode = ($response["status"]) ? self::HTTP_OK : self::HTTP_BAD_REQUEST;
+               $this->response($response, $statusCode);
            }
     }
 
     public function edit_post($id)
     {
-
         $editData = $this->input->post();
 
         if(is_null($editData) || empty($editData)) {
+
             $editData = json_decode($this->security->xss_clean($this->input->raw_input_stream), true);
+
         }
 
         $editData = !is_null($editData) ? $editData : [];
