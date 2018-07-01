@@ -52,20 +52,14 @@ class AuthControllerTest extends PHPUnit_Framework_TestCase
 
     }
 
-
-    public function testRegister()
+    public function testRegisterAndLogin()
     {
+        echo "\nTesting Register nd Login . . .\n";
         $data = array(
-
             'name' => self::$name,
-
             'email' => self::$email,
-
             'password' => self::$password
-
         );
-
-        print_r($data);
 
         $response = self::$guzzle->post(self::$baseUrl . "register", ['body' => json_encode($data)]);
 
@@ -77,20 +71,18 @@ class AuthControllerTest extends PHPUnit_Framework_TestCase
 
         $this->assertNotEmpty($response['message']);
 
+        if(!empty($response['user']))
+        {
+            $this->loginUser($response['users'][0]['id']);
+
+        }
+
+        echo "\nDone\n";
+
     }
 
-    public function testLogin()
+    public function loginUser()
     {
-        $data = [
-
-            'email' => self::$email,
-
-            'password' => self::$password
-
-        ];
-
-        print_r($data);
-        //is what is being returned from the postman
         $response = self::$guzzle->post(self::$baseUrl . "login", ['body' => json_encode($data)]);
 
         $this->assertEquals($response->getStatusCode(), 200);
@@ -101,7 +93,26 @@ class AuthControllerTest extends PHPUnit_Framework_TestCase
 
         $this->assertNotEmpty($response['message']);
 
+        echo "\nDone\n";
+
     }
+
+//    public function testLogin()
+//    {
+//        echo "\nTesting Login . . .\n";
+//
+//        $data = [
+//
+//            'email' => self::$email,
+//
+//            'password' => self::$password
+//
+//        ];
+//
+////        print_r($data);
+//        //is what is being returned from the postman
+//
+//    }
 
 
 
